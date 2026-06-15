@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   backend:
@@ -7,20 +7,35 @@ services:
     command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
     ports:
       - "8000:8000"
-    db:
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
     image: postgres:15
+    container_name: postgres_db
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
   frontend:
-    build: ./backend
+    build: ./frontend
     container_name: vue_frontend
     ports:
       - "80:80"
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  postgres_data:
