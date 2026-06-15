@@ -29,9 +29,7 @@ jobs:
       - name: Build and push Backend Image
         uses: docker/build-push-action@v5
         with:
-
-          context: ./backend
-          file: ./backend/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
-      
-          tags: reszamalvin/scm-backend:latest
+          tags: reszamalvin/pracindo-backend:latest
