@@ -2,9 +2,8 @@ version: "3.8"
 
 services:
   backend:
-    build: ./backend
+    image: your-dockerhub-user/django-backend:latest
     container_name: django_backend
-    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
     ports:
       - "8000:8000"
     environment:
@@ -29,7 +28,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    image: your-dockerhub-user/vue-frontend:latest
     container_name: vue_frontend
     ports:
       - "80:80"
