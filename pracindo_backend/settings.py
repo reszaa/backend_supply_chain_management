@@ -114,6 +114,11 @@ DATABASES = {
 }
 
 
+SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-key-lokal-anda')
+
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
