@@ -4,4 +4,4 @@ from .models import TransaksiBelanja
 class TransaksiBelanjaSerializer(serializers.ModelSerializer):
     class Meta:
         model = TransaksiBelanja
-        fields = '__all__'
+        fields = '__all__'  

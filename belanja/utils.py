@@ -1,22 +1,26 @@
 from django.db.models import Sum
 from .models import TransaksiBelanja
-# Import model Dompet yang baru kita buat
 from dompet.models import SaldoDompet 
 
-def kalkulasi_dompet_utama():
+def kalkulasi_dompet_utama(entitas='PT'):
     """
-    Utility untuk menarik saldo REAL-TIME dari tabel Dompet.
-    Saat ini kita fokus menarik data untuk entitas 'PT'.
+    Utility untuk menarik saldo REAL-TIME dari tabel Dompet berdasarkan entitas (PT/CV).
     """
-    
-    kas_fisik = SaldoDompet.objects.filter(entitas='PT', kategori='FISIK').aggregate(total=Sum('saldo'))['total'] or 0
-    kas_elektrik = SaldoDompet.objects.filter(entitas='PT', kategori='ELEKTRIK').aggregate(total=Sum('saldo'))['total'] or 0
-    piutang = SaldoDompet.objects.filter(entitas='PT', kategori='PIUTANG').aggregate(total=Sum('saldo'))['total'] or 0
+    try:
+        dompet = SaldoDompet.objects.get(entitas=entitas)
+        kas_fisik = dompet.saldo_fisik
+        kas_elektrik = dompet.saldo_elektrik
+        piutang = dompet.saldo_piutang
+    except SaldoDompet.DoesNotExist:
+
+        kas_fisik = 0
+        kas_elektrik = 0
+        piutang = 0
     
     saldo_kas_sekarang = kas_fisik + kas_elektrik 
     kas_kecil = TransaksiBelanja.objects.aggregate(total=Sum('nominal'))['total'] or 0
     total_pembelian = 0 
-    total_penjualan = 0
+    total_penjualan = 0 
 
     total_pengeluaran_aktif = kas_kecil + total_pembelian
 

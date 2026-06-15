@@ -1,30 +1,32 @@
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
 from .models import TransaksiBelanja
 from .serializers import TransaksiBelanjaSerializer
 from .utils import kalkulasi_dompet_utama
-from django.db.models import Sum
 
+class TransaksiBelanjaViewSet(viewsets.ModelViewSet):
+    queryset = TransaksiBelanja.objects.all().order_by('-tanggal', '-id_transaksi')
+    serializer_class = TransaksiBelanjaSerializer
 
-@api_view(['GET'])
-def get_semua_belanja(request):
-    transaksi = TransaksiBelanja.objects.all().order_by('-tanggal')
-    serializer = TransaksiBelanjaSerializer(transaksi, many=True)
-    return Response(serializer.data)
-
-@api_view(['POST'])
-def tambah_belanja(request):
-    serializer = TransaksiBelanjaSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'success': True, 'data': serializer.data}, status=status.HTTP_201_CREATED)
-
-    print("Error validasi:", serializer.errors) 
-    return Response({'success': False, 'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        """
+        Fungsi ini mencegat query default dan menyaringnya
+        jika ada parameter '?entitas=' dari Frontend Vue.
+        """
+        queryset = super().get_queryset()
+        entitas = self.request.query_params.get('entitas')
+        if entitas:
+            queryset = queryset.filter(entitas=entitas)
+            
+        return queryset
 
 @api_view(['GET'])
 def get_dashboard_summary(request):
-    data_dompet = kalkulasi_dompet_utama()
+    """
+    Fungsi ini menangkap parameter entitas dan melemparnya ke utils
+    kalkulator saldo dompet yang sudah kita buat sebelumnya."""
+    entitas = request.query_params.get('entitas', 'PT')
+    data_summary = kalkulasi_dompet_utama(entitas=entitas)
     
-    return Response(data_dompet)
+    return Response(data_summary)
