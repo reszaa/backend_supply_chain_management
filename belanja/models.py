@@ -11,15 +11,11 @@ class TransaksiBelanja(models.Model):
 
     id_transaksi = models.CharField(max_length=50, primary_key=True, verbose_name="ID Pengeluaran")
     tanggal = models.DateTimeField(auto_now_add=True)
-    
     kategori = models.CharField(max_length=50, choices=KATEGORI_CHOICES, default='OPERASIONAL')
     nama_pengeluaran = models.CharField(max_length=200, help_text="Contoh: Beli bensin mobil box, Servis printer, dll")
-    
-    pemohon = models.CharField(max_length=100)
-    
+    pemohon = models.CharField(max_length=100) 
     nominal = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Total Biaya (Rp)")
-    
-    bukti_nota = models.ImageField(upload_to='bukti_belanja/', blank=True, null=True, verbose_name="Foto Nota/Struk")
+    bukti_nota = models.FileField(upload_to='bukti_belanja/', blank=True, null=True, verbose_name="Bukti Nota/Struk")
     
     keterangan = models.TextField(blank=True, null=True)
 

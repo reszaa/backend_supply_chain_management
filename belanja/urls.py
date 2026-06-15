@@ -1,10 +1,8 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import TransaksiBelanjaViewSet
-
-router = DefaultRouter()
-router.register(r'data', TransaksiBelanjaViewSet, basename='belanja')
+from django.urls import path,include
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('pengeluaran/', views.get_semua_belanja, name='get_semua_belanja'),
+    path('pengeluaran/tambah/', views.tambah_belanja, name='tambah_belanja'),
+    path('dashboard-summary/', views.get_dashboard_summary, name='dashboard_summary'),
 ]

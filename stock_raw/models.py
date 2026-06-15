@@ -41,20 +41,11 @@ def save(self, *args, **kwargs):
             self.po_item.kuantitas_terkirim += qty
             self.po_item.save()
             
-            # 🔥 PENGAMAN EKSTRA KETAT UNTUK ERROR 500
-            # 1. Pastikan unit_kg tidak None (jika kosong, anggap 0)
+
             raw_unit = self.po_item.unit_kg or 0
-            
-            # 2. Konversi ke float lalu ke int untuk membuang desimal (.00), lalu ke string
             unit_bersih = str(int(float(raw_unit)))
-            
-            # 3. Pastikan packaging tidak None
             pack = self.po_item.packaging or "TANPA_KEMASAN"
-            
-            # 4. Gabungkan menjadi bag@50kg
             kemasan_final = f"{pack}@{unit_bersih}kg"
-            
-            # 5. Samakan semua nama menjadi huruf kecil agar tidak ada duplikat (RED vs red)
             nama_barang_bersih = self.po_item.nama_item.lower()
             
             saldo, created = SaldoBahanBaku.objects.get_or_create(

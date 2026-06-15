@@ -61,9 +61,11 @@ INSTALLED_APPS = [
     'stock_retail',
     'retail_list',
     'tools',
+    'docPayment',
     'produksi',
     'logistic',
     'belanja',
+    'dompet',
 ]
 
 MIDDLEWARE = [

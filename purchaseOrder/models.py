@@ -1,5 +1,4 @@
 from django.db import models
-
 class TransaksiPurchaseOrder(models.Model):
 
     ENTITAS_CHOICES = [
@@ -19,9 +18,32 @@ class TransaksiPurchaseOrder(models.Model):
     file_faktur = models.FileField(upload_to='dokumen_po/faktur/%Y/%m/', blank=True, null=True, verbose_name="File Faktur")
     file_surat_jalan = models.FileField(upload_to='dokumen_po/surat_jalan/%Y/%m/', blank=True, null=True, verbose_name="File Surat Jalan")
     
-    # LOGIKA BARU: False = Menunggu Audit, True = Sudah Audit
     status_audit = models.BooleanField(default=False, verbose_name="Status Audit PO")
+    status_pembayaran = models.CharField(
+        max_length=20, 
+        choices=[('Unpaid', 'Belum Dibayar'), ('Partial', 'Nyicil/Parsial'), ('Paid', 'Sudah Lunas')], 
+        default='Unpaid'
+    )
+    tanggal_jatuh_tempo = models.DateField(blank=True, null=True, verbose_name="Jatuh Tempo Tagihan")
 
+class RiwayatPembayaranPO(models.Model):
+    po_referensi = models.ForeignKey(
+        TransaksiPurchaseOrder, 
+        on_delete=models.CASCADE, 
+        related_name='riwayat_pembayaran_aplikasi' 
+    )
+    tanggal_bayar = models.DateField(auto_now_add=True)
+    nominal_dibayar = models.DecimalField(max_digits=15, decimal_places=2, help_text="Nominal cicilan/pelunasan")
+    bukti_transfer = models.FileField(upload_to='dokumen_po/pembayaran/%Y/%m/', blank=True, null=True)
+    catatan = models.CharField(max_length=255, blank=True, null=True, help_text="Contoh: Pembayaran Termin 1")
+
+    class Meta:
+        db_table = 'transaksi_po_pembayaran'
+        verbose_name_plural = "Riwayat Pembayaran PO"
+
+    def __str__(self):
+        return f"{self.po_referensi.id_transaksi} - Rp {self.nominal_dibayar}"
+    
     class Meta:
         db_table = 'transaksi_po_header'
         verbose_name_plural = "Data Transaksi PO"
