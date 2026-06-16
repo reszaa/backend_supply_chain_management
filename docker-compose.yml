@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   backend:
-    image: your-dockerhub-user/django-backend:latest
+    image: reszamalvin/pracindo-backend:latest
     container_name: django_backend
     ports:
       - "8000:8000"
